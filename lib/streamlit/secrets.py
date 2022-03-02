@@ -55,10 +55,7 @@ class AttrDict(dict):  # type: ignore[type-arg]
 
     @staticmethod
     def _maybe_wrap_in_attr_dict(value) -> Any:
-        if not isinstance(value, dict):
-            return value
-        else:
-            return AttrDict(**value)
+        return value if not isinstance(value, dict) else AttrDict(**value)
 
     def __getattr__(self, attr_name: str) -> Any:
         try:
@@ -207,23 +204,14 @@ class Secrets(Mapping[str, Any]):
     def __getattr__(self, key: str) -> Any:
         try:
             value = self._parse(True)[key]
-            if not isinstance(value, dict):
-                return value
-            else:
-                return AttrDict(**value)
-        # We add FileNotFoundError since __getattr__ is expected to only raise
-        # AttributeError. Without handling FileNotFoundError, unittests.mocks
-        # fails during mock creation on Python3.9
+            return value if not isinstance(value, dict) else AttrDict(**value)
         except (KeyError, FileNotFoundError):
             raise AttributeError(_missing_attr_error_message(key))
 
     def __getitem__(self, key: str) -> Any:
         try:
             value = self._parse(True)[key]
-            if not isinstance(value, dict):
-                return value
-            else:
-                return AttrDict(**value)
+            return value if not isinstance(value, dict) else AttrDict(**value)
         except KeyError:
             raise KeyError(_missing_key_error_message(key))
 

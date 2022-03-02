@@ -391,8 +391,7 @@ class CacheTest(testutil.DeltaGeneratorTestCase):
     def test_function_body_uses_nested_listcomps(self):
         @st.cache()
         def foo(arg):
-            production = [[outer + inner for inner in range(3)] for outer in range(3)]
-            return production
+            return [[outer + inner for inner in range(3)] for outer in range(3)]
 
         # make sure st.cache() doesn't crash, per https://github.com/streamlit/streamlit/issues/2305
         self.assertEqual(foo(1), [[0, 1, 2], [1, 2, 3], [2, 3, 4]])
@@ -555,15 +554,15 @@ Object of type legacy_caching.caching_test.NotHashable:
     def test_hash_funcs_acceptable_keys(self):
         @st.cache
         def unhashable_type_func():
-            return (x for x in range(1))
+            return iter(range(1))
 
         @st.cache(hash_funcs={types.GeneratorType: id})
         def hf_key_as_type():
-            return (x for x in range(1))
+            return iter(range(1))
 
         @st.cache(hash_funcs={"builtins.generator": id})
         def hf_key_as_str():
-            return (x for x in range(1))
+            return iter(range(1))
 
         with self.assertRaises(hashing.UnhashableTypeError) as cm:
             unhashable_type_func()

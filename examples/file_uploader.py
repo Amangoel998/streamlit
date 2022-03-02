@@ -22,8 +22,7 @@ should test it by hand. Please upload a CSV file and make sure a table shows up
 below with its contents.
 """
 
-w = st.file_uploader("Upload a CSV file", type="csv")
-if w:
+if w := st.file_uploader("Upload a CSV file", type="csv"):
     import pandas as pd
 
     data = pd.read_csv(w)

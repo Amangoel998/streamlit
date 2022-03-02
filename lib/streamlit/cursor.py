@@ -21,10 +21,7 @@ from streamlit.script_run_context import get_script_run_ctx
 def make_delta_path(
     root_container: int, parent_path: Tuple[int, ...], index: int
 ) -> List[int]:
-    delta_path = [root_container]
-    delta_path.extend(parent_path)
-    delta_path.append(index)
-    return delta_path
+    return [root_container, *parent_path, index]
 
 
 def get_container_cursor(

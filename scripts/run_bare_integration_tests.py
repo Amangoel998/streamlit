@@ -21,6 +21,7 @@ If any script exits with a non-zero status, this will also exit
 with a non-zero status.
 """
 
+
 import os
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Lock
@@ -33,11 +34,7 @@ import click
 # Where we expect to find the example files.
 E2E_DIR = "e2e/scripts"
 
-EXCLUDED_FILENAMES = set()  # type: Set[str]
-
-# st_experimental_rerun.py calls st.experimental_rerun which raises a
-# RerunException when called within plain Python.
-EXCLUDED_FILENAMES.add("st_experimental_rerun.py")
+EXCLUDED_FILENAMES = {"st_experimental_rerun.py"}
 
 # Since there is not DISPLAY set (and since Streamlit is not actually running
 # and fixing Matplotlib in these tests), we set the MPL backend to something
@@ -46,10 +43,7 @@ os.environ["MPLBACKEND"] = "Agg"
 
 
 def _command_to_string(command):
-    if isinstance(command, list):
-        return " ".join(command)
-    else:
-        return command
+    return " ".join(command) if isinstance(command, list) else command
 
 
 def _get_filenames(dir):

@@ -154,25 +154,27 @@ class AppSession:
         It's an error to use a AppSession after it's been shut down.
 
         """
-        if self._state != AppSessionState.SHUTDOWN_REQUESTED:
-            LOGGER.debug("Shutting down (id=%s)", self.id)
-            # Clear any unused session files in upload file manager and media
-            # file manager
-            self._uploaded_file_mgr.remove_session_files(self.id)
-            in_memory_file_manager.clear_session_files(self.id)
-            in_memory_file_manager.del_expired_files()
+        if self._state == AppSessionState.SHUTDOWN_REQUESTED:
+            return
 
-            # Shut down the ScriptRunner, if one is active.
-            # self._state must not be set to SHUTDOWN_REQUESTED until
-            # after this is called.
-            if self._scriptrunner is not None:
-                self._enqueue_script_request(ScriptRequest.SHUTDOWN)
+        LOGGER.debug("Shutting down (id=%s)", self.id)
+        # Clear any unused session files in upload file manager and media
+        # file manager
+        self._uploaded_file_mgr.remove_session_files(self.id)
+        in_memory_file_manager.clear_session_files(self.id)
+        in_memory_file_manager.del_expired_files()
 
-            self._state = AppSessionState.SHUTDOWN_REQUESTED
-            self._local_sources_watcher.close()
-            if self._stop_config_listener is not None:
-                self._stop_config_listener()
-            secrets._file_change_listener.disconnect(self._on_secrets_file_changed)
+        # Shut down the ScriptRunner, if one is active.
+        # self._state must not be set to SHUTDOWN_REQUESTED until
+        # after this is called.
+        if self._scriptrunner is not None:
+            self._enqueue_script_request(ScriptRequest.SHUTDOWN)
+
+        self._state = AppSessionState.SHUTDOWN_REQUESTED
+        self._local_sources_watcher.close()
+        if self._stop_config_listener is not None:
+            self._stop_config_listener()
+        secrets._file_change_listener.disconnect(self._on_secrets_file_changed)
 
     def enqueue(self, msg: ForwardMsg) -> None:
         """Enqueue a new ForwardMsg to our browser queue.

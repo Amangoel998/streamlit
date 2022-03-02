@@ -157,7 +157,7 @@ class Credentials(object):
         """
         try:
             self.load(auto_resolve)
-        except (Exception, RuntimeError) as e:
+        except Exception as e:
             _exit(str(e))
 
         if self.activation is None or not self.activation.is_valid:

@@ -308,8 +308,8 @@ class ScriptRunnerTest(AsyncTestCase):
     def test_runtime_error(self, show_error_details: bool):
         """Tests that we correctly handle scripts with runtime errors."""
         with testutil.patch_config_options(
-            {"client.showErrorDetails": show_error_details}
-        ):
+                {"client.showErrorDetails": show_error_details}
+            ):
             scriptrunner = TestScriptRunner("runtime_error.py")
             scriptrunner.enqueue_rerun()
             scriptrunner.start()
@@ -330,12 +330,9 @@ class ScriptRunnerTest(AsyncTestCase):
             elts = scriptrunner.elements()
             self.assertEqual(elts[0].WhichOneof("type"), "text")
 
-            if show_error_details:
-                self._assert_num_deltas(scriptrunner, 2)
-                self.assertEqual(elts[1].WhichOneof("type"), "exception")
-            else:
-                self._assert_num_deltas(scriptrunner, 2)
-                self.assertEqual(elts[1].WhichOneof("type"), "exception")
+            self._assert_num_deltas(scriptrunner, 2)
+            self.assertEqual(elts[1].WhichOneof("type"), "exception")
+            if not show_error_details:
                 exc_msg = elts[1].exception.message
                 self.assertTrue(_GENERIC_UNCAUGHT_EXCEPTION_TEXT == exc_msg)
 
@@ -787,9 +784,7 @@ def require_widgets_deltas(
     num_complete = 0
     while time.time() - t0 < timeout:
         time.sleep(0.1)
-        num_complete = sum(
-            1 for runner in runners if len(runner.deltas()) >= NUM_DELTAS
-        )
+        num_complete = sum(len(runner.deltas()) >= NUM_DELTAS for runner in runners)
         if num_complete == len(runners):
             return
 

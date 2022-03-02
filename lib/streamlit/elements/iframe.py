@@ -134,9 +134,5 @@ def marshall(
         proto.width = width
         proto.has_width = True
 
-    if height is not None:
-        proto.height = height
-    else:
-        proto.height = 150
-
+    proto.height = height if height is not None else 150
     proto.scrolling = scrolling

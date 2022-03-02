@@ -325,10 +325,7 @@ def ensure_indexable(obj: OptionSequence) -> Sequence[Any]:
     # This is an imperfect check because there is no guarantee that an `index`
     # function actually does the thing we want.
     index_fn = getattr(it, "index", None)
-    if callable(index_fn):
-        return it  # type: ignore
-    else:
-        return list(it)
+    return it if callable(index_fn) else list(it)
 
 
 def is_pandas_version_less_than(v: str) -> bool:
@@ -407,7 +404,4 @@ def bytes_to_data_frame(source: bytes) -> DataFrame:
 
 
 def to_key(key: Optional[Key]) -> Optional[str]:
-    if key is None:
-        return None
-    else:
-        return str(key)
+    return None if key is None else str(key)

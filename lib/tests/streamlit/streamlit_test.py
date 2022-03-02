@@ -52,8 +52,7 @@ def get_version():
     base_dir = os.path.abspath(os.path.join(dirname, "../.."))
     pattern = re.compile(r"(?:.*VERSION = \")(?P<version>.*)(?:\"  # PEP-440$)")
     for line in open(os.path.join(base_dir, "setup.py")).readlines():
-        m = pattern.match(line)
-        if m:
+        if m := pattern.match(line):
             return m.group("version")
 
 
@@ -834,7 +833,7 @@ class StreamlitAPITest(testutil.DeltaGeneratorTestCase):
             "https://www.youtube.com/embed/sSn4e1lLVpA",
         )
         # url should be transformed into an embed link (or left alone).
-        for x in range(0, len(yt_urls)):
+        for x in range(len(yt_urls)):
             st.video(yt_urls[x])
             el = self.get_delta_from_queue().new_element
             self.assertEqual(el.video.url, yt_embeds[x])

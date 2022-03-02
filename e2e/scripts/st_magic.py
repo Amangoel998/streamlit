@@ -14,6 +14,7 @@
 
 """File docstring. Should not be printed."""
 
+
 import asyncio
 import contextlib
 
@@ -25,23 +26,14 @@ async_loop = asyncio.new_event_loop()
 a = "printed"
 "This should be", a
 
-# Standalone statements within blocks should be printed
+"IF"
 
-if True:
-    "IF"
+"ELIF"
 
-if False:
-    pass
-elif True:
-    "ELIF"
-
-if False:
-    pass
-else:
-    "ELSE"
+"ELSE"
 
 
-for ii in range(1):
+for _ in range(1):
     "FOR"
 
 while True:

@@ -358,14 +358,13 @@ def marshall_file(coordinates, data, proto_download_button, mimetype, file_name=
         string_data = data.read()
         data = string_data.encode()
         mimetype = mimetype or "text/plain"
-    # Assume bytes; try methods until we run out.
     elif isinstance(data, bytes):
         mimetype = mimetype or "application/octet-stream"
     elif isinstance(data, io.BytesIO):
         data.seek(0)
         data = data.getvalue()
         mimetype = mimetype or "application/octet-stream"
-    elif isinstance(data, io.RawIOBase) or isinstance(data, io.BufferedReader):
+    elif isinstance(data, (io.RawIOBase, io.BufferedReader)):
         data.seek(0)
         data = data.read()
         mimetype = mimetype or "application/octet-stream"

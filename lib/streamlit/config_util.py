@@ -11,7 +11,7 @@ def server_option_changed(
 ) -> bool:
     """Return True if and only if an option in the server section differs
     between old_options and new_options."""
-    for opt_name in old_options.keys():
+    for opt_name in old_options:
         if not opt_name.startswith("server"):
             continue
 
@@ -128,5 +128,4 @@ def _clean(txt):
 
 def _clean_paragraphs(txt):
     paragraphs = txt.split("\n\n")
-    cleaned_paragraphs = [_clean(x) for x in paragraphs]
-    return cleaned_paragraphs
+    return [_clean(x) for x in paragraphs]

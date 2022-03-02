@@ -216,7 +216,7 @@ class SessionStateUpdateTest(testutil.DeltaGeneratorTestCase):
     def test_setting_before_widget_creation(self):
         state = st.session_state
         state.c = True
-        assert state.c == True
+        assert state.c
 
         c = st.checkbox("checkbox", key="c")
         assert c == True
@@ -613,8 +613,8 @@ def test_compact_presence(state):
 @given(m=stst.session_state())
 def test_mapping_laws(m):
     assert len(m) == len(m.keys()) == len(m.values()) == len(m.items())
-    assert [value for value in m.values()] == [m[key] for key in m.keys()]
-    assert [item for item in m.items()] == [(key, m[key]) for key in m.keys()]
+    assert list(m.values()) == [m[key] for key in m.keys()]
+    assert list(m.items()) == [(key, m[key]) for key in m.keys()]
 
 
 @given(

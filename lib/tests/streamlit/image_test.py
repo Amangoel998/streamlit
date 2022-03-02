@@ -133,8 +133,9 @@ class ImageProtoTest(testutil.DeltaGeneratorTestCase):
 
         file_id = _calculate_file_id(
             _np_array_to_bytes(data_in, output_format=format),
-            mimetype="image/" + format,
+            mimetype=f"image/{format}",
         )
+
 
         st.image(data_in, output_format=format)
         imglist = self.get_delta_from_queue().new_element.imgs

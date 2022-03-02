@@ -136,10 +136,7 @@ class ScriptRequestQueue:
         A (ScriptRequest, Data) tuple.
         """
         with self._lock:
-            if len(self._queue) > 0:
-                return self._queue.popleft()
-            else:
-                return None, None
+            return self._queue.popleft() if len(self._queue) > 0 else (None, None)
 
 
 T = TypeVar("T")
@@ -150,7 +147,7 @@ def _index_if(collection: Iterable[T], pred: Callable[[T], bool]) -> int:
 
     Returns the index, or -1 if no such item exists.
     """
-    for index, element in enumerate(collection):
-        if pred(element):
-            return index
-    return -1
+    return next(
+        (index for index, element in enumerate(collection) if pred(element)),
+        -1,
+    )

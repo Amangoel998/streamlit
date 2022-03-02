@@ -35,15 +35,15 @@ def set_log_level(level: Union[str, int]) -> None:
 
     if isinstance(level, str):
         level = level.upper()
-    if level == "CRITICAL" or level == logging.CRITICAL:
+    if level in ["CRITICAL", logging.CRITICAL]:
         log_level = logging.CRITICAL
-    elif level == "ERROR" or level == logging.ERROR:
+    elif level in ["ERROR", logging.ERROR]:
         log_level = logging.ERROR
-    elif level == "WARNING" or level == logging.WARNING:
+    elif level in ["WARNING", logging.WARNING]:
         log_level = logging.WARNING
-    elif level == "INFO" or level == logging.INFO:
+    elif level in ["INFO", logging.INFO]:
         log_level = logging.INFO
-    elif level == "DEBUG" or level == logging.DEBUG:
+    elif level in ["DEBUG", logging.DEBUG]:
         log_level = logging.DEBUG
     else:
         msg = 'undefined log level "%s"' % level
@@ -116,11 +116,7 @@ def get_logger(name: str) -> logging.Logger:
     if name in LOGGERS.keys():
         return LOGGERS[name]
 
-    if name == "root":
-        logger = logging.getLogger()
-    else:
-        logger = logging.getLogger(name)
-
+    logger = logging.getLogger() if name == "root" else logging.getLogger(name)
     logger.setLevel(LOG_LEVEL)
     logger.propagate = False
     setup_formatter(logger)

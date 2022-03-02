@@ -176,21 +176,17 @@ def to_deckgl_json(data, zoom):
     range_lon = abs(max_lon - min_lon)
     range_lat = abs(max_lat - min_lat)
 
-    if zoom == None:
-        if range_lon > range_lat:
-            longitude_distance = range_lon
-        else:
-            longitude_distance = range_lat
+    if zoom is None:
+        longitude_distance = range_lon if range_lon > range_lat else range_lat
         zoom = _get_zoom_level(longitude_distance)
 
     # "+1" because itertuples includes the row index.
     lon_col_index = data.columns.get_loc(lon) + 1
     lat_col_index = data.columns.get_loc(lat) + 1
-    final_data = []
-    for row in data.itertuples():
-        final_data.append(
-            {"lon": float(row[lon_col_index]), "lat": float(row[lat_col_index])}
-        )
+    final_data = [
+        {"lon": float(row[lon_col_index]), "lat": float(row[lat_col_index])}
+        for row in data.itertuples()
+    ]
 
     default = copy.deepcopy(_DEFAULT_MAP)
     default["initialViewState"]["latitude"] = center_lat

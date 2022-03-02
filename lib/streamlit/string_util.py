@@ -48,7 +48,7 @@ def escape_markdown(raw_string: str) -> str:
     metacharacters = ["\\", "*", "-", "=", "`", "!", "#", "|"]
     result = raw_string
     for character in metacharacters:
-        result = result.replace(character, "\\" + character)
+        result = result.replace(character, f"\\{character}")
     return result
 
 

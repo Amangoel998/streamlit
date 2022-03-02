@@ -37,9 +37,8 @@ def get_audio_files_in_dir(directory):
             name, ext = item.split(".")
         except:
             continue
-        if name and ext:
-            if ext in AUDIO_EXTENSIONS:
-                out.append(item)
+        if name and ext and ext in AUDIO_EXTENSIONS:
+            out.append(item)
     return out
 
 

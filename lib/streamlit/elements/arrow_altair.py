@@ -304,11 +304,7 @@ def _generate_chart(
 
     data = pd.melt(data.reset_index(), id_vars=[index_name])
 
-    if chart_type == ChartType.AREA:
-        opacity = {"value": 0.7}
-    else:
-        opacity = {"value": 1.0}
-
+    opacity = {"value": 0.7} if chart_type == ChartType.AREA else {"value": 1.0}
     # Set the X and Y axes' scale to "utc" if they contain date values.
     # This causes time data to be displayed in UTC, rather the user's local
     # time zone. (By default, vega-lite displays time data in the browser's
@@ -325,7 +321,7 @@ def _generate_chart(
     if chart_type == ChartType.BAR and not _is_date_column(data, index_name):
         x_type = "ordinal"
 
-    chart = (
+    return (
         getattr(
             alt.Chart(data, width=width, height=height), "mark_" + chart_type.value
         )()
@@ -338,7 +334,6 @@ def _generate_chart(
         )
         .interactive()
     )
-    return chart
 
 
 def marshall(

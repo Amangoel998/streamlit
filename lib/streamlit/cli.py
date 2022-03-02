@@ -198,9 +198,9 @@ def main_run(target, args=None, **kwargs):
             target = url_util.process_gitblob_url(target)
             _download_remote(main_script_path, target)
             _main_run(main_script_path, args, flag_options=kwargs)
+    elif not os.path.exists(target):
+        raise click.BadParameter("File does not exist: {}".format(target))
     else:
-        if not os.path.exists(target):
-            raise click.BadParameter("File does not exist: {}".format(target))
         _main_run(target, args, flag_options=kwargs)
 
 

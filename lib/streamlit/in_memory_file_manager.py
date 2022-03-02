@@ -42,13 +42,7 @@ FILE_TYPE_DOWNLOADABLE = "downloadable_file"
 def _get_session_id() -> str:
     """Semantic wrapper to retrieve current AppSession ID."""
     ctx = get_script_run_ctx()
-    if ctx is None:
-        # This is only None when running "python myscript.py" rather than
-        # "streamlit run myscript.py". In which case the session ID doesn't
-        # matter and can just be a constant, as there's only ever "session".
-        return "dontcare"
-    else:
-        return ctx.session_id
+    return "dontcare" if ctx is None else ctx.session_id
 
 
 def _calculate_file_id(
@@ -168,7 +162,7 @@ class InMemoryFileManager(CacheStatsProvider):
 
     def __init__(self):
         # Dict of file ID to InMemoryFile.
-        self._files_by_id: Dict[str, InMemoryFile] = dict()
+        self._files_by_id: Dict[str, InMemoryFile] = {}
 
         # Dict[session ID][coordinates] -> InMemoryFile.
         self._files_by_session_and_coord: Dict[
@@ -191,15 +185,16 @@ class InMemoryFileManager(CacheStatsProvider):
         for file_id, imf in list(self._files_by_id.items()):
             if imf.id not in active_file_ids:
 
-                if imf.file_type == FILE_TYPE_MEDIA:
+                if (
+                    imf.file_type != FILE_TYPE_MEDIA
+                    and imf.file_type == FILE_TYPE_DOWNLOADABLE
+                    and imf._is_marked_for_delete
+                    or imf.file_type == FILE_TYPE_MEDIA
+                ):
                     LOGGER.debug(f"Deleting File: {file_id}")
                     del self._files_by_id[file_id]
                 elif imf.file_type == FILE_TYPE_DOWNLOADABLE:
-                    if imf._is_marked_for_delete:
-                        LOGGER.debug(f"Deleting File: {file_id}")
-                        del self._files_by_id[file_id]
-                    else:
-                        imf._mark_for_delete()
+                    imf._mark_for_delete()
 
     def clear_session_files(self, session_id: Optional[str] = None) -> None:
         """Removes AppSession-coordinate mapping immediately, and id-file mapping later.
@@ -306,16 +301,11 @@ class InMemoryFileManager(CacheStatsProvider):
         # with other threads that may be manipulating the cache.
         files_by_id = self._files_by_id.copy()
 
-        stats: List[CacheStat] = []
-        for file_id, file in files_by_id.items():
-            stats.append(
-                CacheStat(
+        return [CacheStat(
                     category_name="st_in_memory_file_manager",
                     cache_name="",
                     byte_length=file.content_size,
-                )
-            )
-        return stats
+                ) for file_id, file in files_by_id.items()]
 
     def __contains__(self, inmemory_file_or_id):
         return inmemory_file_or_id in self._files_by_id

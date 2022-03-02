@@ -86,35 +86,7 @@ class DateInputTest(testutil.DeltaGeneratorTestCase):
         self.assertEqual(c.min, min_date_value)
         self.assertEqual(c.max, max_date_value)
 
-    @parameterized.expand(
-        [
-            (
-                datetime.today(),
-                datetime.today() + timedelta(days=7),
-                datetime.today() + timedelta(days=14),
-            ),
-            (
-                datetime.today() + timedelta(days=8),
-                datetime.today(),
-                datetime.today() + timedelta(days=7),
-            ),
-            (
-                [datetime.today(), datetime.today() + timedelta(2)],
-                datetime.today() + timedelta(days=7),
-                datetime.today() + timedelta(days=14),
-            ),
-            (
-                [datetime.today(), datetime.today() + timedelta(8)],
-                datetime.today() + timedelta(days=7),
-                datetime.today() + timedelta(days=14),
-            ),
-            (
-                [datetime.today(), datetime.today() + timedelta(8)],
-                datetime.today(),
-                datetime.today() + timedelta(days=7),
-            ),
-        ]
-    )
+    @parameterized.expand([(datetime.now(), datetime.now() + timedelta(days=7), datetime.now() + timedelta(days=14)), (datetime.now() + timedelta(days=8), datetime.now(), datetime.now() + timedelta(days=7)), ([datetime.now(), datetime.now() + timedelta(2)], datetime.now() + timedelta(days=7), datetime.now() + timedelta(days=14)), ([datetime.now(), datetime.now() + timedelta(8)], datetime.now() + timedelta(days=7), datetime.now() + timedelta(days=14)), ([datetime.now(), datetime.now() + timedelta(8)], datetime.now(), datetime.now() + timedelta(days=7))])
     def test_value_out_of_range(self, value, min_date, max_date):
         with raises(StreamlitAPIException) as exc_message:
             st.date_input(
@@ -129,37 +101,13 @@ class DateInputTest(testutil.DeltaGeneratorTestCase):
             == str(exc_message.value)
         )
 
-    @parameterized.expand(
-        [
-            (datetime.today(), datetime.today(), datetime.today() + timedelta(days=14)),
-            (
-                datetime.today() + timedelta(days=14),
-                datetime.today(),
-                datetime.today() + timedelta(days=14),
-            ),
-            (
-                datetime.today() + timedelta(days=10),
-                datetime.today(),
-                datetime.today() + timedelta(days=14),
-            ),
-            (
-                [datetime.today() + timedelta(1), datetime.today() + timedelta(2)],
-                datetime.today(),
-                datetime.today() + timedelta(days=14),
-            ),
-            (
-                [datetime.today(), datetime.today() + timedelta(14)],
-                datetime.today(),
-                datetime.today() + timedelta(days=14),
-            ),
-        ]
-    )
+    @parameterized.expand([(datetime.now(), datetime.now(), datetime.now() + timedelta(days=14)), (datetime.now() + timedelta(days=14), datetime.now(), datetime.now() + timedelta(days=14)), (datetime.now() + timedelta(days=10), datetime.now(), datetime.now() + timedelta(days=14)), ([datetime.now() + timedelta(1), datetime.now() + timedelta(2)], datetime.now(), datetime.now() + timedelta(days=14)), ([datetime.now(), datetime.now() + timedelta(14)], datetime.now(), datetime.now() + timedelta(days=14))])
     def test_value_in_range(self, value, min_date, max_date):
         st.date_input("the label", value=value, min_value=min_date, max_value=max_date)
 
     def test_range_session_state(self):
         """Test a range set by session state."""
-        date_range_input = [datetime.today(), datetime.today() + timedelta(2)]
+        date_range_input = [datetime.now(), datetime.now() + timedelta(2)]
         state = st.session_state
         state["date_range"] = date_range_input[:]
 
