@@ -137,16 +137,12 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
         # below.
         uploaded_files: List[UploadedFileRec] = []
         for _, flist in files.items():
-            for file in flist:
-                uploaded_files.append(
-                    UploadedFileRec(
+            uploaded_files.extend(UploadedFileRec(
                         id=0,
                         name=file["filename"],
                         type=file["content_type"],
                         data=file["body"],
-                    )
-                )
-
+                    ) for file in flist)
         if len(uploaded_files) != 1:
             self.send_error(
                 400, reason=f"Expected 1 file, but got {len(uploaded_files)}"

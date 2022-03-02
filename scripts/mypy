@@ -86,8 +86,8 @@ def process_report(path: str) -> None:
 
     print(Module.header())
     for module in sorted(modules, key=lambda m: m.name):
-        print(str(module))
-    print(str(totals))
+        print(module)
+    print(totals)
 
 
 @click.command()
@@ -96,9 +96,12 @@ def main(report: bool = False) -> None:
     paths: List[str] = []
     for path in PATHS:
         if "*" in path:
-            for filename in glob.glob(path):
-                if not (filename in EXCLUDE_FILES or filename.endswith(".sh")):
-                    paths.append(filename)
+            paths.extend(
+                filename
+                for filename in glob.glob(path)
+                if not (filename in EXCLUDE_FILES or filename.endswith(".sh"))
+            )
+
         else:
             paths.append(path)
 

@@ -194,9 +194,11 @@ def set_menu_items_proto(lowercase_menu_items, menu_items_proto):
         else:
             menu_items_proto.hide_report_a_bug = True
 
-    if ABOUT_KEY in lowercase_menu_items:
-        if lowercase_menu_items[ABOUT_KEY] is not None:
-            menu_items_proto.about_section_md = dedent(lowercase_menu_items[ABOUT_KEY])
+    if (
+        ABOUT_KEY in lowercase_menu_items
+        and lowercase_menu_items[ABOUT_KEY] is not None
+    ):
+        menu_items_proto.about_section_md = dedent(lowercase_menu_items[ABOUT_KEY])
 
 
 def validate_menu_items(dict):
@@ -206,9 +208,8 @@ def validate_menu_items(dict):
                 "We only accept the keys: "
                 f'"Get help", "Report a bug", and "About" ("{k}" is not a valid key.)'
             )
-        if v is not None:
-            if not valid_url(v) and k != ABOUT_KEY:
-                raise StreamlitAPIException(f'"{v}" is a not a valid URL!')
+        if v is not None and not valid_url(v) and k != ABOUT_KEY:
+            raise StreamlitAPIException(f'"{v}" is a not a valid URL!')
 
 
 def valid_menu_item_key(key):

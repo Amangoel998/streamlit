@@ -267,7 +267,7 @@ def _marshall_styles(proto: ArrowProto, styler: Styler, styles: Dict[str, Any]) 
             rule = _pandas_style_to_css("cell_style", style, styler.uuid)
             css_rules.append(rule)
 
-    if len(css_rules) > 0:
+    if css_rules:
         proto.styler.styles = "\n".join(css_rules)
 
 
@@ -342,15 +342,15 @@ def _pandas_style_to_css(
     else:
         cell_selectors = style["selectors"]
 
-    selectors = []
-    for cell_selector in cell_selectors:
-        selectors.append(table_selector + separator + cell_selector)
+    selectors = [
+        table_selector + separator + cell_selector
+        for cell_selector in cell_selectors
+    ]
+
     selector = ", ".join(selectors)
 
     declaration_block = "; ".join(declarations)
-    rule_set = selector + " { " + declaration_block + " }"
-
-    return rule_set
+    return selector + " { " + declaration_block + " }"
 
 
 def _marshall_display_values(
@@ -398,8 +398,7 @@ def _use_display_values(df: DataFrame, styles: Dict[str, Any]) -> DataFrame:
         rows = styles["body"]
         for row in rows:
             for cell in row:
-                match = cell_selector_regex.match(cell["id"])
-                if match:
+                if match := cell_selector_regex.match(cell["id"]):
                     r, c = map(int, match.groups())
                     new_df.iat[r, c] = str(cell["display_value"])
 

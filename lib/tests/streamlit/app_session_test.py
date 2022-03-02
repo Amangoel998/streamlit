@@ -140,11 +140,7 @@ class AppSessionNewSessionDataTest(tornado.testing.AsyncTestCase):
     @tornado.testing.gen_test
     def test_enqueue_new_session_message(self, _1, _2, patched_config):
         def get_option(name):
-            if name == "server.runOnSave":
-                # Just to avoid starting the watcher for no reason.
-                return False
-
-            return config.get_option(name)
+            return False if name == "server.runOnSave" else config.get_option(name)
 
         patched_config.get_option.side_effect = get_option
         patched_config.get_options_for_section.side_effect = (

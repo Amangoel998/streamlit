@@ -150,7 +150,7 @@ def _marshall_styles(proto, styler, styles):
             rule = _pandas_style_to_css("cell_style", style, styler.uuid)
             css_rules.append(rule)
 
-    if len(css_rules) > 0:
+    if css_rules:
         proto.styler.styles = "\n".join(css_rules)
 
 
@@ -188,7 +188,7 @@ def _pandas_style_to_css(style_type, style, uuid, separator=""):
         declaration = css_property.strip() + ": " + css_value.strip()
         declarations.append(declaration)
 
-    table_selector = "#T_" + str(uuid)
+    table_selector = f"#T_{str(uuid)}"
 
     # In pandas < 1.1.0
     # translated_style["cellstyle"] has the following shape:
@@ -216,15 +216,15 @@ def _pandas_style_to_css(style_type, style, uuid, separator=""):
     else:
         cell_selectors = style["selectors"]
 
-    selectors = []
-    for cell_selector in cell_selectors:
-        selectors.append(table_selector + separator + cell_selector)
+    selectors = [
+        table_selector + separator + cell_selector
+        for cell_selector in cell_selectors
+    ]
+
     selector = ", ".join(selectors)
 
     declaration_block = "; ".join(declarations)
-    rule_set = selector + " { " + declaration_block + " }"
-
-    return rule_set
+    return selector + " { " + declaration_block + " }"
 
 
 def _marshall_display_values(proto, df, styles):
@@ -272,8 +272,7 @@ def _use_display_values(df, styles):
         for row in rows:
             for cell in row:
                 cell_id = cell["id"]
-                match = cell_selector_regex.match(cell_id)
-                if match:
+                if match := cell_selector_regex.match(cell_id):
                     r, c = map(int, match.groups())
                     new_df.iat[r, c] = str(cell["display_value"])
 

@@ -100,7 +100,7 @@ class DeclareComponentTest(unittest.TestCase):
         """Succeed when a path is provided."""
 
         def isdir(path):
-            return path == PATH or path == os.path.abspath(PATH)
+            return path in [PATH, os.path.abspath(PATH)]
 
         with mock.patch(
             "streamlit.components.v1.components.os.path.isdir", side_effect=isdir
@@ -461,15 +461,9 @@ class ComponentRequestHandlerTest(tornado.testing.AsyncHTTPTestCase):
         """Test support for binary files reads."""
 
         def _open_read(m, payload):
-            is_binary = False
             args, kwargs = m.call_args
-            if len(args) > 1:
-                if "b" in args[1]:
-                    is_binary = True
-            encoding = "utf-8"
-            if "encoding" in kwargs:
-                encoding = kwargs["encoding"]
-
+            is_binary = len(args) > 1 and "b" in args[1]
+            encoding = kwargs["encoding"] if "encoding" in kwargs else "utf-8"
             if is_binary:
                 from io import BytesIO
 

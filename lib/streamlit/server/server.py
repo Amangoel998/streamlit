@@ -202,27 +202,26 @@ def start_listening_tcp_socket(http_server: HTTPServer) -> None:
             break  # It worked! So let's break out of the loop.
 
         except (OSError, socket.error) as e:
-            if e.errno == errno.EADDRINUSE:
-                if server_port_is_manually_set():
-                    LOGGER.error("Port %s is already in use", port)
-                    sys.exit(1)
-                else:
-                    LOGGER.debug(
-                        "Port %s already in use, trying to use the next one.", port
-                    )
-                    port += 1
-                    # Save port 3000 because it is used for the development
-                    # server in the front end.
-                    if port == 3000:
-                        port += 1
-
-                    config.set_option(
-                        "server.port", port, ConfigOption.STREAMLIT_DEFINITION
-                    )
-                    call_count += 1
-            else:
+            if e.errno != errno.EADDRINUSE:
                 raise
 
+            if server_port_is_manually_set():
+                LOGGER.error("Port %s is already in use", port)
+                sys.exit(1)
+            else:
+                LOGGER.debug(
+                    "Port %s already in use, trying to use the next one.", port
+                )
+                port += 1
+                # Save port 3000 because it is used for the development
+                # server in the front end.
+                if port == 3000:
+                    port += 1
+
+                config.set_option(
+                    "server.port", port, ConfigOption.STREAMLIT_DEFINITION
+                )
+                call_count += 1
     if call_count >= MAX_PORT_SEARCH_RETRIES:
         raise RetriesExceeded(
             f"Cannot start Streamlit server. Port {port} is already in use, and "
@@ -495,9 +494,7 @@ class Server:
         try:
             if self._state == State.INITIAL:
                 self._set_state(State.WAITING_FOR_FIRST_BROWSER)
-            elif self._state == State.ONE_OR_MORE_BROWSERS_CONNECTED:
-                pass
-            else:
+            elif self._state != State.ONE_OR_MORE_BROWSERS_CONNECTED:
                 raise RuntimeError("Bad server state at start: %s" % self._state)
 
             if on_started is not None:
@@ -505,7 +502,11 @@ class Server:
 
             while not self._must_stop.is_set():
 
-                if self._state == State.WAITING_FOR_FIRST_BROWSER:
+                if (
+                    self._state == State.WAITING_FOR_FIRST_BROWSER
+                    or self._state != State.ONE_OR_MORE_BROWSERS_CONNECTED
+                    and self._state == State.NO_BROWSERS_CONNECTED
+                ):
                     yield tornado.gen.convert_yielded(
                         asyncio.wait(
                             [self._must_stop.wait(), self._has_connection.wait()],
@@ -531,14 +532,6 @@ class Server:
                             yield
                         yield
                     yield tornado.gen.sleep(0.01)
-
-                elif self._state == State.NO_BROWSERS_CONNECTED:
-                    yield tornado.gen.convert_yielded(
-                        asyncio.wait(
-                            [self._must_stop.wait(), self._has_connection.wait()],
-                            return_when=asyncio.FIRST_COMPLETED,
-                        )
-                    )
 
                 else:
                     # Break out of the thread loop if we encounter any other state.
@@ -741,9 +734,7 @@ class _BrowserWebSocketHandler(WebSocketHandler):
 
         (See the docstring in the parent class.)
         """
-        if config.get_option("server.enableWebsocketCompression"):
-            return {}
-        return None
+        return {} if config.get_option("server.enableWebsocketCompression") else None
 
     @tornado.gen.coroutine
     def on_message(self, payload: bytes) -> None:

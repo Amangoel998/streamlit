@@ -225,9 +225,7 @@ class DeltaGenerator(
         return util.repr_(self)
 
     def __enter__(self):
-        # with block started
-        ctx = get_script_run_ctx()
-        if ctx:
+        if ctx := get_script_run_ctx():
             ctx.dg_stack.append(self)
 
     def __exit__(self, type, value, traceback):

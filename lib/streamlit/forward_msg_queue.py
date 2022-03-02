@@ -59,9 +59,7 @@ class ForwardMsgQueue:
         return len(self._queue) == 0
 
     def get_initial_msg(self) -> Optional[ForwardMsg]:
-        if len(self._queue) > 0:
-            return self._queue[0]
-        return None
+        return self._queue[0] if len(self._queue) > 0 else None
 
     def enqueue(self, msg: ForwardMsg) -> None:
         """Add message into queue, possibly composing it with another message."""
@@ -94,7 +92,7 @@ class ForwardMsgQueue:
 
     def _clear(self) -> None:
         self._queue = []
-        self._delta_index_map = dict()
+        self._delta_index_map = {}
 
     def clear(self) -> None:
         """Clear this queue."""

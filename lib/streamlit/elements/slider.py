@@ -446,12 +446,7 @@ class SliderMixin:
             slider_proto.help = dedent(help)
 
         def deserialize_slider(ui_value: Optional[List[float]], widget_id=""):
-            if ui_value is not None:
-                val = ui_value
-            else:
-                # Widget has not been used; fallback to the original value,
-                val = cast(List[float], value)
-
+            val = ui_value if ui_value is not None else cast(List[float], value)
             # The widget always returns a float array, so fix the return type if necessary
             if data_type == SliderProto.INT:
                 val = [int(v) for v in val]

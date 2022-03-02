@@ -37,9 +37,8 @@ def get_video_files_in_dir(directory):
             name, ext = item.split(".")
         except:
             continue
-        if name and ext:
-            if ext in VIDEO_EXTENSIONS:
-                out.append(item)
+        if name and ext and ext in VIDEO_EXTENSIONS:
+            out.append(item)
     return out
 
 

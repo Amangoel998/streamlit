@@ -133,7 +133,7 @@ class HashTest(unittest.TestCase):
         self.assertNotEqual(get_hash({1: 1}), get_hash({1: 2}))
         self.assertNotEqual(get_hash({1: 1}), get_hash([(1, 1)]))
 
-        dict_gen = {1: (x for x in range(1))}
+        dict_gen = {1: iter(range(1))}
         with self.assertRaises(UnhashableTypeError):
             get_hash(dict_gen)
 
@@ -307,7 +307,7 @@ class NotHashableTest(unittest.TestCase):
 
     def test_generator_not_hashable(self):
         with self.assertRaises(UnhashableTypeError):
-            get_hash((x for x in range(1)))
+            get_hash(iter(range(1)))
 
     def test_function_not_hashable(self):
         def foo():

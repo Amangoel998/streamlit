@@ -31,10 +31,7 @@ def process_gitblob_url(url: str) -> str:
     If so, returns a new URL to get the "raw" script.
     If not, returns URL unchanged.
     """
-    # Matches github.com and gist.github.com.  Will not match githubusercontent.com.
-    # See this regex with explainer and sample text here: https://regexr.com/4odk3
-    match = _GITBLOB_RE.match(url)
-    if match:
+    if match := _GITBLOB_RE.match(url):
         mdict = match.groupdict()
         # If it has "blob" in the url, replace this with "raw" and we're done.
         if mdict["blob_or_raw"] == "blob":
@@ -45,7 +42,7 @@ def process_gitblob_url(url: str) -> str:
             return url
 
         # It's a gist. Just tack "raw" on the end.
-        return url + "/raw"
+        return f'{url}/raw'
 
     return url
 

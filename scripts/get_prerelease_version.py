@@ -48,8 +48,7 @@ def get_current_version():
     pattern = re.compile(regex)
 
     for line in fileinput.input(filename):
-        match = pattern.match(line.rstrip())
-        if match:
+        if match := pattern.match(line.rstrip()):
             return match.groups()[1]
 
     raise Exception('Did not find regex "%s" for version in setup.py' % (regex))
@@ -67,7 +66,7 @@ def main():
     if current_version.finalize_version() < target_version:
         current_version = target_version
 
-    print(str(current_version.bump_prerelease()))
+    print(current_version.bump_prerelease())
 
 
 if __name__ == "__main__":

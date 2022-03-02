@@ -114,12 +114,7 @@ def marshall(proto, data=None, spec=None, use_container_width=False, **kwargs):
     # Support passing no spec arg, but filling it with kwargs.
     # Example:
     #   marshall(proto, baz='boz')
-    if spec is None:
-        spec = dict()
-    else:
-        # Clone the spec dict, since we may be mutating it.
-        spec = dict(spec)
-
+    spec = dict() if spec is None else dict(spec)
     # Support passing in kwargs. Example:
     #   marshall(proto, {foo: 'bar'}, baz='boz')
     if len(kwargs):
@@ -127,7 +122,7 @@ def marshall(proto, data=None, spec=None, use_container_width=False, **kwargs):
         # This only works for string keys, but kwarg keys are strings anyways.
         spec = dict(spec, **dicttools.unflatten(kwargs, _CHANNELS))
 
-    if len(spec) == 0:
+    if not spec:
         raise ValueError("Vega-Lite charts require a non-empty spec dict.")
 
     if "autosize" not in spec:

@@ -130,9 +130,9 @@ class NumberInputTest(testutil.DeltaGeneratorTestCase):
         #       See https://github.com/streamlit/streamlit/pull/943
         SUPPORTED = "adifFeEgGuXxo"
         for char in SUPPORTED:
-            st.number_input("any label", format="%" + char)
+            st.number_input("any label", format=f"%{char}")
             c = self.get_delta_from_queue().new_element.number_input
-            self.assertEqual(c.format, "%" + char)
+            self.assertEqual(c.format, f"%{char}")
 
     def test_warns_on_float_type_with_int_format(self):
         st.number_input("the label", value=5.0, format="%d")
@@ -158,7 +158,7 @@ class NumberInputTest(testutil.DeltaGeneratorTestCase):
         UNSUPPORTED = "pAn"
         for char in UNSUPPORTED:
             with pytest.raises(StreamlitAPIException) as exc_message:
-                st.number_input("any label", value=3.14, format="%" + char)
+                st.number_input("any label", value=3.14, format=f"%{char}")
 
     def test_error_on_invalid_formats(self):
         BAD_FORMATS = [

@@ -188,6 +188,6 @@ def _get_embed_url(url):
     # (Note that our use namedtuple._replace is fine because that's not a
     # private method! It just has an underscore to avoid clashing with the
     # tuple field names)
-    parsed_embed_url = parsed_url._replace(path=parsed_url.path + ".embed")
+    parsed_embed_url = parsed_url._replace(path=f'{parsed_url.path}.embed')
 
     return urllib.parse.urlunparse(parsed_embed_url)

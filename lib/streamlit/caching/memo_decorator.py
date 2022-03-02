@@ -382,14 +382,11 @@ class MemoCache(Cache):
     def get_stats(self) -> List[CacheStat]:
         stats: List[CacheStat] = []
         with self._mem_cache_lock:
-            for item_key, item_value in self._mem_cache.items():
-                stats.append(
-                    CacheStat(
+            stats.extend(CacheStat(
                         category_name="st_memo",
                         cache_name=self.display_name,
                         byte_length=len(item_value),
-                    )
-                )
+                    ) for item_key, item_value in self._mem_cache.items())
         return stats
 
     def read_value(self, key: str) -> Any:
@@ -401,12 +398,11 @@ class MemoCache(Cache):
             pickled_value = self._read_from_mem_cache(key)
 
         except CacheKeyNotFoundError as e:
-            if self.persist == "disk":
-                pickled_value = self._read_from_disk_cache(key)
-                self._write_to_mem_cache(key, pickled_value)
-            else:
+            if self.persist != "disk":
                 raise e
 
+            pickled_value = self._read_from_disk_cache(key)
+            self._write_to_mem_cache(key, pickled_value)
         try:
             return pickle.loads(pickled_value)
         except pickle.UnpicklingError as exc:

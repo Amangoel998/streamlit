@@ -119,7 +119,7 @@ class MetricMixin:
             # Add support for numpy values (e.g. int16, float64, etc.)
             try:
                 # Item could also be just a variable, so we use try, except
-                if isinstance(value.item(), float) or isinstance(value.item(), int):
+                if isinstance(value.item(), (float, int)):
                     return str(value.item())
             except Exception:
                 pass
@@ -135,7 +135,7 @@ class MetricMixin:
             return ""
         if isinstance(delta, str):
             return dedent(delta)
-        elif isinstance(delta, int) or isinstance(delta, float):
+        elif isinstance(delta, (int, float)):
             return str(delta)
         else:
             raise TypeError(

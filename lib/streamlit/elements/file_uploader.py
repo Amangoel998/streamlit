@@ -300,13 +300,11 @@ class FileUploaderMixin:
         ) -> SomeUploadedFiles:
             file_recs = self._get_file_recs(widget_id, ui_value)
             if len(file_recs) == 0:
-                return_value: Optional[Union[List[UploadedFile], UploadedFile]] = (
+                return (
                     [] if accept_multiple_files else None
                 )
-            else:
-                files = [UploadedFile(rec) for rec in file_recs]
-                return_value = files if accept_multiple_files else files[0]
-            return return_value
+            files = [UploadedFile(rec) for rec in file_recs]
+            return files if accept_multiple_files else files[0]
 
         def serialize_file_uploader(files: SomeUploadedFiles) -> FileUploaderStateProto:
             state_proto = FileUploaderStateProto()

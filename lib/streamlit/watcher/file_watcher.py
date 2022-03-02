@@ -64,21 +64,22 @@ FileWatcherType = Union[
 
 
 def report_watchdog_availability():
-    if not watchdog_available:
-        if not config.get_option("global.disableWatchdogWarning"):
-            msg = "\n  $ xcode-select --install" if env_util.IS_DARWIN else ""
+    if not watchdog_available and not config.get_option(
+        "global.disableWatchdogWarning"
+    ):
+        msg = "\n  $ xcode-select --install" if env_util.IS_DARWIN else ""
 
-            click.secho(
-                "  %s" % "For better performance, install the Watchdog module:",
-                fg="blue",
-                bold=True,
-            )
-            click.secho(
-                """%s
+        click.secho(
+            "  %s" % "For better performance, install the Watchdog module:",
+            fg="blue",
+            bold=True,
+        )
+        click.secho(
+            """%s
   $ pip install watchdog
             """
-                % msg
-            )
+            % msg
+        )
 
 
 def watch_file(
@@ -128,14 +129,15 @@ def get_file_watcher_class(watcher_type: str) -> FileWatcherType:
     """Return the FileWatcher class that corresponds to the given watcher_type
     string. Acceptable values are 'auto', 'watchdog', 'poll' and 'none'.
     """
-    if watcher_type == "auto":
-        if watchdog_available:
-            return EventBasedFileWatcher
-        else:
-            return PollingFileWatcher
-    elif watcher_type == "watchdog" and watchdog_available:
+    if (
+        watcher_type == "auto"
+        and watchdog_available
+        or watcher_type != "auto"
+        and watcher_type == "watchdog"
+        and watchdog_available
+    ):
         return EventBasedFileWatcher
-    elif watcher_type == "poll":
+    elif watcher_type in {"auto", "poll"}:
         return PollingFileWatcher
     else:
         return NoOpFileWatcher

@@ -116,11 +116,11 @@ class StatsHandler(tornado.web.RequestHandler):
         if "application/x-protobuf" in self.request.headers.get_list("Accept"):
             self.write(self._stats_to_proto(stats).SerializeToString())
             self.set_header("Content-Type", "application/x-protobuf")
-            self.set_status(200)
         else:
             self.write(self._stats_to_text(self._manager.get_stats()))
             self.set_header("Content-Type", "application/openmetrics-text")
-            self.set_status(200)
+
+        self.set_status(200)
 
     @staticmethod
     def _stats_to_text(stats: List[CacheStat]) -> str:
